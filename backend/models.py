@@ -4,6 +4,17 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict
 
 
+PrioridadDerivacion = Literal["Alta", "Media", "Baja"]
+EstadoPermitido = Literal[
+    "Pendiente",
+    "En revisión",
+    "Agendada",
+    "Atendida",
+    "Cerrada",
+    "Cancelada",
+]
+
+
 class PacienteCrear(BaseModel):
     rut: str
     nombre: str
@@ -27,9 +38,10 @@ class DerivacionCrear(BaseModel):
     paciente_rut: str
     especialidad: str
     motivo: str
-    prioridad: Literal["Alta", "Media", "Baja"]
+    prioridad: PrioridadDerivacion
     responsable: str
     observaciones: str = "Sin observaciones"
+    fecha_limite: datetime | None = None
 
 
 class DerivacionRespuesta(BaseModel):
@@ -43,19 +55,13 @@ class DerivacionRespuesta(BaseModel):
     observaciones: str | None
     fecha_creacion: datetime
     fecha_limite: datetime | None
+    atrasada: bool
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class EstadoDerivacion(BaseModel):
-    estado: Literal[
-        "Pendiente",
-        "En revisión",
-        "Agendada",
-        "Atendida",
-        "Cerrada",
-        "Cancelada"
-    ]
+    estado: EstadoPermitido
 
 
 class HistorialDerivacionRespuesta(BaseModel):
@@ -66,3 +72,15 @@ class HistorialDerivacionRespuesta(BaseModel):
     fecha_cambio: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class IndicadoresRespuesta(BaseModel):
+    total_derivaciones: int
+    pendientes: int
+    en_revision: int
+    agendadas: int
+    atendidas: int
+    cerradas: int
+    canceladas: int
+    prioridad_alta: int
+    atrasadas: int
