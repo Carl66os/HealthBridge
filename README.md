@@ -83,6 +83,10 @@ Ejecuta la suite desde la raíz del proyecto:
 
 Las pruebas usan una base SQLite temporal aislada, datos ficticios sembrados por fixtures y no utilizan la base PostgreSQL real ni su archivo `.env`.
 
+## Integración continua
+
+GitHub Actions ejecutará automáticamente las pruebas aisladas del backend y el build del frontend en cada `push` y `pull request`. El flujo no usa secretos, `.env`, PostgreSQL real ni servicios externos.
+
 ## Datos demo
 
 La demostración local usa exclusivamente la base SQLite separada `sqlite:///./healthbridge_demo.db`; nunca utiliza la base PostgreSQL configurada para el proyecto. Aplica las migraciones Alembic antes de cargar datos ficticios con especialidades, estados, prioridades, responsables, historial, una derivación atrasada y otra sin fecha límite.
