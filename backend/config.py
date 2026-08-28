@@ -1,3 +1,5 @@
+from os import getenv
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -15,4 +17,6 @@ class Settings(BaseSettings):
     )
 
 
-settings = Settings()
+settings = Settings(
+    _env_file=None if getenv("HEALTHBRIDGE_TESTING") == "1" else ".env"
+)
