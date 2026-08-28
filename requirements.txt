@@ -5,3 +5,5 @@ pydantic-settings
 SQLAlchemy>=2.0
 psycopg[binary]
 alembic
+pytest
+httpx
