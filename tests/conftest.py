@@ -7,6 +7,7 @@ os.environ["DB_PORT"] = "5432"
 os.environ["DB_NAME"] = "healthbridge_test"
 os.environ["DB_USER"] = "test-user"
 os.environ["DB_PASSWORD"] = "test-password"
+os.environ.pop("DATABASE_URL", None)
 
 import pytest
 from fastapi.testclient import TestClient

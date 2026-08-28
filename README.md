@@ -50,14 +50,14 @@ Se requiere contar con PostgreSQL local configurado y un archivo `.env` local ba
 Desde la raíz del repositorio, activa el entorno virtual reparado e instala las dependencias de backend:
 
 ```powershell
-& ..\venv-repaired\Scripts\Activate.ps1
-& ..\venv-repaired\Scripts\python.exe -m pip install -r requirements.txt
+& .\.venv-repaired\Scripts\Activate.ps1
+& .\.venv-repaired\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
 Inicia la API:
 
 ```powershell
-& ..\venv-repaired\Scripts\python.exe -m uvicorn backend.main:app --reload
+& .\.venv-repaired\Scripts\python.exe -m uvicorn backend.main:app --reload
 ```
 
 En otra terminal, instala y levanta el frontend:
@@ -78,10 +78,40 @@ URLs locales:
 Ejecuta la suite desde la raíz del proyecto:
 
 ```powershell
-& ..\venv-repaired\Scripts\python.exe -B -m pytest -q -p no:cacheprovider
+& .\.venv-repaired\Scripts\python.exe -B -m pytest -q -p no:cacheprovider
 ```
 
 Las pruebas usan una base SQLite temporal aislada, datos ficticios sembrados por fixtures y no utilizan la base PostgreSQL real ni su archivo `.env`.
+
+## Datos demo
+
+La demostración local usa exclusivamente la base SQLite separada `sqlite:///./healthbridge_demo.db`; nunca utiliza la base PostgreSQL configurada para el proyecto. Aplica las migraciones Alembic antes de cargar datos ficticios con especialidades, estados, prioridades, responsables, historial, una derivación atrasada y otra sin fecha límite.
+
+Para crearla desde la raíz del repositorio:
+
+```powershell
+& .\.venv-repaired\Scripts\python.exe scripts\seed_demo.py
+```
+
+El comando se niega a cargar datos si la base demo ya contiene registros. Para regenerar solamente el archivo local `healthbridge_demo.db`:
+
+```powershell
+& .\.venv-repaired\Scripts\python.exe scripts\seed_demo.py --reset
+```
+
+`--reset` rechaza PostgreSQL, URLs externas y otros nombres de archivo; borra únicamente los datos de demostración locales. La API actual se configura con PostgreSQL; para visualizar esta SQLite desde la API o el frontend se requerirá una configuración local explícita de URL de base de datos, que no forma parte de esta tarea. No copies estos datos a la base PostgreSQL normal.
+
+## Ejecutar la demo completa
+
+Desde la raíz del repositorio, crea los datos ficticios y define la URL temporal de la base demo antes de iniciar FastAPI:
+
+```powershell
+& .\.venv-repaired\Scripts\python.exe scripts\seed_demo.py
+$env:DATABASE_URL = "sqlite:///./healthbridge_demo.db"
+& .\.venv-repaired\Scripts\python.exe -m uvicorn backend.main:app --reload
+```
+
+`DATABASE_URL` solo afecta la terminal actual. Si no se define, HealthBridge conserva su configuración PostgreSQL habitual. Para volver a ella en la misma terminal, ejecuta `Remove-Item Env:DATABASE_URL` antes de iniciar la API.
 
 ## Endpoints principales
 
@@ -106,4 +136,3 @@ La documentación interactiva y los contratos completos están disponibles en Sw
 - Incorporar autenticación y auditoría de acceso y acciones.
 - Aplicar anonimización adicional al texto libre antes de cualquier integración externa.
 - Evaluar una integración opcional de LLM, desacoplada y sujeta a políticas de privacidad, costos, límites de uso y revisión humana obligatoria.
-

@@ -3,3 +3,5 @@ __pycache__/
 *.pyc
 .env
 .pytest_cache/
+# Base SQLite generada para demostración local
+healthbridge_demo.db
