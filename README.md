@@ -36,6 +36,16 @@ flowchart LR
     CP -->|Análisis estructurado| API
 ```
 
+## Capturas de la interfaz
+
+![Dashboard de HealthBridge](docs/images/dashboard-demo.png)
+
+*Dashboard con datos ficticios de demostración*.
+
+![Análisis del Referral Copilot](docs/images/copilot-demo.png)
+
+*Resultado administrativo y de solo lectura del Referral Copilot*.
+
 ## Stack tecnológico
 
 - Backend: Python, FastAPI y Pydantic.
