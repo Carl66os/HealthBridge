@@ -50,8 +50,15 @@ def test_reporta_datos_faltantes_e_incertidumbre_alta():
     assert analisis.calidad_datos == "Insuficiente"
     assert analisis.prioridad_sugerida == "Media"
     assert "especialidad" in analisis.datos_faltantes
-    assert "fecha_limite (opcional)" in analisis.datos_faltantes
     assert analisis.incertidumbre.startswith("Alta:")
+
+
+def test_fecha_limite_opcional_no_reduce_calidad_de_datos():
+    analisis = analizar_derivacion(crear_derivacion_completa(fecha_limite=None))
+
+    assert analisis.calidad_datos == "Completa"
+    assert analisis.datos_faltantes == []
+    assert "No hay fecha límite registrada" in analisis.justificacion
 
 
 def test_alerta_fecha_limite_vencida_sin_cambiar_prioridad():

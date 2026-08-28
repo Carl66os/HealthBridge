@@ -38,16 +38,11 @@ def analizar_derivacion(derivacion: DerivacionAnonimizada) -> AnalisisDerivacion
 
 
 def _detectar_datos_faltantes(derivacion: DerivacionAnonimizada) -> list[str]:
-    faltantes = [
+    return [
         campo
         for campo in CAMPOS_REQUERIDOS
         if _es_valor_faltante(getattr(derivacion, campo))
     ]
-
-    if derivacion.fecha_limite is None:
-        faltantes.append("fecha_limite (opcional)")
-
-    return faltantes
 
 
 def _es_valor_faltante(valor: str | None) -> bool:
@@ -55,11 +50,7 @@ def _es_valor_faltante(valor: str | None) -> bool:
 
 
 def _calcular_calidad_datos(datos_faltantes: list[str]) -> str:
-    faltantes_requeridos = [
-        campo for campo in datos_faltantes if campo != "fecha_limite (opcional)"
-    ]
-
-    if len(faltantes_requeridos) >= 3:
+    if len(datos_faltantes) >= 3:
         return "Insuficiente"
     if datos_faltantes:
         return "Incompleta"
@@ -104,7 +95,10 @@ def _crear_justificacion(
             "La fecha límite figura vencida y requiere revisión administrativa."
         )
     elif derivacion.fecha_limite is None:
-        partes.append("No hay fecha límite registrada.")
+        partes.append(
+            "No hay fecha límite registrada; puede completarse si el proceso "
+            "administrativo lo requiere."
+        )
 
     if datos_faltantes:
         partes.append(f"Datos pendientes de completar: {', '.join(datos_faltantes)}.")

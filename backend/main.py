@@ -1,5 +1,5 @@
 from fastapi import Depends, FastAPI, HTTPException, status
-from sqlalchemy import and_, case, func, select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -16,6 +16,8 @@ from backend.models import (
     PrioridadDerivacion,
 )
 from backend.orm_models import Derivacion, HistorialDerivacion, Paciente
+from backend.routers.copilot import router as copilot_router
+from backend.services.derivaciones import condicion_atrasada, expresion_atrasada
 
 
 app = FastAPI(
@@ -23,6 +25,7 @@ app = FastAPI(
     description="API para gestión y trazabilidad de derivaciones clínicas.",
     version="0.1.0"
 )
+app.include_router(copilot_router)
 
 
 def confirmar_cambios(db: Session, detalle_error: str, codigo_error: int) -> None:
@@ -31,18 +34,6 @@ def confirmar_cambios(db: Session, detalle_error: str, codigo_error: int) -> Non
     except IntegrityError as error:
         db.rollback()
         raise HTTPException(status_code=codigo_error, detail=detalle_error) from error
-
-
-def condicion_atrasada():
-    return and_(
-        Derivacion.fecha_limite.is_not(None),
-        Derivacion.fecha_limite < func.now(),
-        Derivacion.estado.not_in(["Cerrada", "Cancelada"]),
-    )
-
-
-def expresion_atrasada():
-    return case((condicion_atrasada(), True), else_=False)
 
 
 def crear_respuesta_derivacion(
